@@ -9,8 +9,15 @@ const router = express.Router();
 
 
 router.get('/', (req, res, next) => {
-  console.log('shop', adminData.products);
-  res.sendFile(path.join(rootDir, 'views', 'shop.html'));
+  const products = adminData.products;
+  //res.sendFile(path.join(rootDir, 'views', 'shop.html'));
+  // need to render the template using the view engine
+  // we will pass to the template the products in js object
+  res.render('shop', {
+    prods: products,
+    docTitle: 'Shop',
+    
+  });
 });
 
 module.exports = router;

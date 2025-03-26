@@ -4,6 +4,9 @@ const express = require('express');
 const bodyParser = require('body-parser');
 
 const app = express();
+// express will support pug as view engine when we wil use the function for dynamic templates
+app.set('view engine', 'pug');
+app.set('views', 'views');
 
 const adminData = require('./routes/admin');
 const shopRoutes = require('./routes/shop');
