@@ -1,19 +1,11 @@
 const path = require('path');
 
 const express = require('express');
-const { engine } = require('express-handlebars');
 
 const app = express();
-app.engine('handlebars', engine({
-  layoutsDir: path.join(__dirname, 'views', 'layouts'),
-  defaultLayout: 'main-layout',
-  extname: 'handlebars'}));
 
-// express will support pug as view engine when we wil use the function for dynamic templates
-// express do nt support handles bar and need additial configuration for using it
-
-//app.set('view engine', 'pug');
-app.set('view engine', 'handlebars');
+// express will support ejs as view engine when we wil use the function for dynamic templates
+app.set('view engine', 'ejs');
 app.set('views', 'views');
 
 const adminData = require('./routes/admin');
