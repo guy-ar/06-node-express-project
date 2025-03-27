@@ -13,10 +13,16 @@ body {
 main {
   padding: 1rem;
   margin: auto;
+
+  
 }
 
 form {
   display: inline;
+}
+.centered {
+  margin: auto;
+  text-align: center;
 }
 
 .main-header {

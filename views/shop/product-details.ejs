@@ -2,7 +2,19 @@
     <link rel="stylesheet" href="/css/forms.css">
     <link rel="stylesheet" href="/css/product.css">
 </head>
-
 <body>
     <%- include('../includes/navigation') %>
+
+    <main class="centered">
+        <H1><%= product.title %></H1>
+        <hr>     
+        <div class="form-control">
+            <img src="<%= product.imageUrl %>" alt="<%= product.title %>">
+        </div>
+        <h2>$<%= product.price %></h2>
+        <p><%= product.description %></p>
+        <form action="/add-to-cart/<%= product.id %>" method="POST">
+            <button class="btn" type="submit">Add to Cart</button>
+        </form>
+    </main>
 <%- include('../includes/tail') %>
