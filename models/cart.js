@@ -57,6 +57,9 @@ module.exports = class Cart {
             }
             const cart = JSON.parse(fileContent);
             const product = cart.items.find(prod => prod.id === productId);
+            if (!product) {
+                return;
+            }
             const updatedCartItems = cart.items.filter(prod => prod.id !== productId);
             const calculatedSubtotal = +productPrice * product.quantity;
             // Subtract and round to 2 decimal places
@@ -65,6 +68,17 @@ module.exports = class Cart {
             fs.writeFile(p, JSON.stringify(cart), err => {
                 console.log(err);
             });
+        });
+    }
+
+    static getCart(cb) {
+        fs.readFile(p, (err, fileContent) => {
+            const cart = JSON.parse(fileContent);
+            if (err) {
+                cb(null);
+            } else {
+                cb(cart);
+            }
         });
     }
 }
