@@ -10,11 +10,14 @@ const router = express.Router();
 router.get('/add-product', adminController.getAddProducts 
 );
 
-// /admin/products => GET
-router.get('/products', adminController.getProducts);
-
 // /admin/add-product => POST
 router.post('/add-product', adminController.postAddProduct);
+
+// /admin/edit-product => GET
+router.get('/edit-product/:productId', adminController.getEditProducts 
+);
+// /admin/products => GET
+router.get('/products', adminController.getProducts);
 
 module.exports = router;
 
