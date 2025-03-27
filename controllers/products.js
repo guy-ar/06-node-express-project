@@ -18,10 +18,12 @@ exports.postAddProduct = (req, res, next) => {
 exports.getProducts = (req, res, next) => {
     // need to render the template using the view engine
     // we will pass to the template the products in js object
-    const products = Product.fetchAll();
-    res.render('shop', {
-      prods: products, 
-      docTitle: 'Shop',
-      path: '/'
+    Product.fetchAll(products => {
+        res.render('shop', {
+            prods: products, 
+            docTitle: 'Shop',
+            path: '/'
+          });
     });
+    
   }
