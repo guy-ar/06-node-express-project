@@ -1,6 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const rootDir = require('../util/path');
+const Cart = require('./cart');
 const p = path.join(rootDir, 'data', 'products.json');
 
 const readDataFromFile = cb => {
@@ -13,18 +14,19 @@ const readDataFromFile = cb => {
     });
 }
 module.exports = class Product {
-    constructor(id, title, imageUrl, description, price) {
-      this.id = id;
-      this.title = title;
-      this.imageUrl = imageUrl;
-      this.description = description;
-      this.price = price;
-    }
+  constructor(id, title, imageUrl, description, price) {
+    this.id = id;
+    this.title = title;
+    this.imageUrl = imageUrl;
+    this.description = description;
+    this.price = price;
+  }
 
-    save() {
-      readDataFromFile(products => {
+
+  save() {
+    readDataFromFile(products => {
       if (this.id) {
-        // this is exsisting product - need to update it
+        // this is existing product - need to update it
         const existingProductIndex = products.findIndex(
           prod => prod.id === this.id
         );
@@ -43,10 +45,26 @@ module.exports = class Product {
         });
       }
     })
-    }
+  }
 
     static fetchAll(cb) {
       readDataFromFile(cb);
+    }
+
+    static deleteById(id) {
+      readDataFromFile(products => {
+      if (id) {
+        const productToDelete = products.find(prod => prod.id === id);
+        const productPrice = productToDelete.price;
+        const productsToSave = products.filter(prod => prod.id !== id);
+        console.log(productsToSave);
+        fs.writeFile(p, JSON.stringify(productsToSave), err => {
+          if (!err) {
+            Cart.deleteItem(id, productPrice);
+          }
+        });
+      }
+    })
     }
 
     static findById(id, cb) {

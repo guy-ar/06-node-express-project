@@ -37,11 +37,34 @@ module.exports = class Cart {
                 updatedProduct = {id: productId, quantity: 1};
                 cart.items = [...cart.items, updatedProduct];
             }
-            cart.totalPrice = cart.totalPrice + +productPrice;
+            const currentTotal = Number(cart.totalPrice);
+            const numericPrice = Number(productPrice);
+
+            // Calculate and round to 2 decimal places
+            cart.totalPrice = Number((currentTotal + numericPrice).toFixed(2));
             // save updated cart
             fs.writeFile(p, JSON.stringify(cart), err => {
                 console.log(err);
             })
+        });
+    }
+
+    static deleteItem(productId, productPrice) {
+        // fetch existing cart
+        const fileContent = fs.readFile(p, (err, fileContent) => {
+            if (err) {
+                return;
+            }
+            const cart = JSON.parse(fileContent);
+            const product = cart.items.find(prod => prod.id === productId);
+            const updatedCartItems = cart.items.filter(prod => prod.id !== productId);
+            const calculatedSubtotal = +productPrice * product.quantity;
+            // Subtract and round to 2 decimal places
+            cart.totalPrice = +(cart.totalPrice - calculatedSubtotal).toFixed(2);
+            cart.items = updatedCartItems;
+            fs.writeFile(p, JSON.stringify(cart), err => {
+                console.log(err);
+            });
         });
     }
 }

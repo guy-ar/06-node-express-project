@@ -11,23 +11,21 @@
             <div class="form-control">
                 <label for="title">Title</label>
                 <input type="text" name="title" id="title"
-                value="<% if (editing==='true') { %> <%= product.title %> <% } %>">
+                value="<% if (editing==='true') {%><%=product.title%><%}%>">
             </div>
             <div class="form-control">
                 <label for="imageUrl">Image Url</label>
                 <input type="text" name="imageUrl" id="imageUrl"
-                value="<% if (editing==='true') { %> <%= product.imageUrl %> <% } %>">
+                value="<% if (editing==='true') { %><%=product.imageUrl%><% } %>">
             </div>
             <div class="form-control">
                 <label for="price">Price</label>
                 <input type="number" name="price" id="price" step="0.01"
-                value=<% if (editing==='true') { %> <%= product.price %> <% } %>>
+                value=<% if (editing==='true') { %><%=product.price%><% } %>>
             </div>
             <div class="form-control">
                 <label for="description">Description</label>
-                <textarea name="description" id="description" rows="5">
-                    <% if (editing==='true') { %> <%= product.description %> <% } %>
-                </textarea>
+                <textarea name="description" id="description" rows="5"><% if (editing==='true') {%><%=product.description%><% } %></textarea>
             </div>
             <% if (editing === 'true') { %>
                 <input type="hidden" name="productId" value="<%= product.id %>">

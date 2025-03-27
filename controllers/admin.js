@@ -54,6 +54,14 @@ exports.postAddProduct = (req, res, next) => {
       
     res.redirect('/admin/products');
   };
+
+  exports.postDeleteProducts = (req, res, next) => {
+    const prodIdToDelete = req.body.productId;
+    console.log(prodIdToDelete);
+    Product.deleteById(prodIdToDelete);
+      
+    res.redirect('/admin/products');
+  };
 exports.getProducts = (req, res, next) => {
 // need to render the template using the view engine
 // we will pass to the template the products in js object
