@@ -1,5 +1,5 @@
 
-const products = [];
+const Product = require('../models/product');
 exports.getAppProducts = (req, res, next) => {
     
     res.render('add-product', {
@@ -9,17 +9,18 @@ exports.getAppProducts = (req, res, next) => {
   };
 
 exports.postAddProduct = (req, res, next) => {
-    console.log(req.body);
-    products.push({ title: req.body.title });
-    console.log(products);
+    const product = new Product(req.body.title);
+    product.save();
+    
     res.redirect('/');
   };
 
 exports.getProducts = (req, res, next) => {
     // need to render the template using the view engine
     // we will pass to the template the products in js object
+    const products = Product.fetchAll();
     res.render('shop', {
-      prods: products,
+      prods: products, 
       docTitle: 'Shop',
       path: '/'
     });
