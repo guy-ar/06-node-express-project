@@ -1,19 +1,20 @@
 const fs = require('fs');
 const path = require('path');
 const rootDir = require('../util/path');
-//const products = [];
 const p = path.join(rootDir, 'data', 'products.json');
 
 const readDataFromFile = cb => {
-    const fileContent = fs.readFile(p, (err, fileContent) => {
+    fs.readFile(p, (err, fileContent) => {
         if (err) {
-          return cb([]);
+          cb([]);
+        } else {
+          cb(JSON.parse(fileContent));
         }
-        return cb(JSON.parse(fileContent));
     });
 }
 module.exports = class Product {
-    constructor(title, imageUrl, description, price) {
+    constructor(id, title, imageUrl, description, price) {
+      this.id = id;
       this.title = title;
       this.imageUrl = imageUrl;
       this.description = description;
@@ -21,13 +22,27 @@ module.exports = class Product {
     }
 
     save() {
-      this.id = Math.random().toString();
-        readDataFromFile(products => {
-            products.push(this);
-            fs.writeFile(p, JSON.stringify(products), err => {
-                console.log(err);
-            });
-        })
+      readDataFromFile(products => {
+      if (this.id) {
+        // this is exsisting product - need to update it
+        const existingProductIndex = products.findIndex(
+          prod => prod.id === this.id
+        );
+        const productsToSave = [...products];
+        console.log(productsToSave);
+        productsToSave[existingProductIndex]=this;
+        console.log(productsToSave);
+        fs.writeFile(p, JSON.stringify(productsToSave), err => {
+          console.log(err);
+        });
+      } else {
+        this.id = Math.random().toString();
+        products.push(this);
+        fs.writeFile(p, JSON.stringify(products), err => {
+            console.log(err);
+        });
+      }
+    })
     }
 
     static fetchAll(cb) {

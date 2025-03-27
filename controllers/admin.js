@@ -13,7 +13,7 @@ exports.postAddProduct = (req, res, next) => {
     const imageUrl = req.body.imageUrl;
     const description = req.body.description;
     const price = req.body.price;
-    const product = new Product(title, imageUrl, description, price);
+    const product = new Product(null, title, imageUrl, description, price);
     product.save();
     
     res.redirect('/');
@@ -39,6 +39,21 @@ exports.postAddProduct = (req, res, next) => {
     
   };
 
+  exports.postEditProducts = (req, res, next) => {
+    const updatedTitle = req.body.title;
+    const updatedImageUrl = req.body.imageUrl;
+    const updatedDescription = req.body.description;
+    const updatedPrice = req.body.price;
+    const updatedProdId = req.body.productId;
+    // create the product to update
+    const updatedProduct = new Product(updatedProdId, updatedTitle, updatedImageUrl, updatedDescription, updatedPrice);
+    console.log(updatedProduct);
+      
+    // save the updated product
+    updatedProduct.save();
+      
+    res.redirect('/admin/products');
+  };
 exports.getProducts = (req, res, next) => {
 // need to render the template using the view engine
 // we will pass to the template the products in js object
