@@ -1,6 +1,7 @@
 const path = require('path');
 
 const express = require('express');
+const sequelize = require('./util/database');
 
 const app = express();
 
@@ -22,4 +23,13 @@ app.use(shopRoutes);
 
 app.use(errorController.getErrorPage);
 
-app.listen(3000);
+// insure that all models are synced with the database - if no tables exist they will be created
+sequelize
+    .sync()
+    .then(result => {
+        //console.log(result);
+        app.listen(3000);
+    })
+    .catch(err => {
+        console.log(err);
+    });
