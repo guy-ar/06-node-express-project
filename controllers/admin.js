@@ -14,28 +14,31 @@ exports.postAddProduct = (req, res, next) => {
     const description = req.body.description;
     const price = req.body.price;
     const product = new Product(null, title, imageUrl, description, price);
-    product.save();
-    
-    res.redirect('/');
+    product.insert().then(() => {
+      res.redirect('/');
+    });
   };
   exports.getEditProducts = (req, res, next) => {
     const editMode = req.query.edit;
     const prodId = req.params.productId;
-    Product.findById(prodId, product => {
-      if (!product) {
-        // better to move to error page - but for now we will redirect
-        return res.redirect('/');
-      }
-      console.log(product);
-      console.log(editMode);
-      res.render('admin/edit-product', {
-        docTitle: 'Edit Product',
-        path: '/admin/edit-product',
-        editing: editMode,
-        buttonCaption: 'Update Product',
-        product: product
-      });
-    })
+    Product.findById(prodId)
+      .then(([product]) => {
+        if (!product) {
+          // better to move to error page - but for now we will redirect
+          return res.redirect('/');
+        }
+        console.log(product);
+        console.log(editMode);
+        res.render('admin/edit-product', {
+          docTitle: 'Edit Product',
+          path: '/admin/edit-product',
+          editing: editMode,
+          buttonCaption: 'Update Product',
+          product: product[0],
+        });
+      
+      })
+      .catch(err => console.log(err));
     
   };
 
@@ -50,27 +53,31 @@ exports.postAddProduct = (req, res, next) => {
     console.log(updatedProduct);
       
     // save the updated product
-    updatedProduct.save();
-      
-    res.redirect('/admin/products');
+    updatedProduct.update().then(() => {
+      res.redirect('/admin/products');
+    })
   };
 
   exports.postDeleteProducts = (req, res, next) => {
     const prodIdToDelete = req.body.productId;
     console.log(prodIdToDelete);
-    Product.deleteById(prodIdToDelete);
+    Product.deleteById(prodIdToDelete).then(() => {
+      console.log('deleted');
+      res.redirect('/admin/products');
+    }).catch(err => console.log(err));
       
-    res.redirect('/admin/products');
+    
   };
 exports.getProducts = (req, res, next) => {
 // need to render the template using the view engine
 // we will pass to the template the products in js object
-Product.fetchAll(products => {
+Product.fetchAll().then(
+  ([rows, fieldData]) => {
     res.render('admin/products', {
-        prods: products, 
+        prods: rows, 
         docTitle: 'Admin Products',
         path: '/admin/products'
         });
-    });
+    }).catch(err => console.log(err));
 
 }

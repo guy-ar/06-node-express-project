@@ -11,6 +11,7 @@ app.set('views', 'views');
 const adminRoutes = require('./routes/admin');
 const shopRoutes = require('./routes/shop');
 const errorController = require('./controllers/error');
+const e = require('express');
 
 app.use(express.urlencoded({extended: true}));
 app.use(express.json());
