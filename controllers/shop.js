@@ -5,8 +5,8 @@ const Cart = require('../models/cart');
 exports.getProducts = (req, res, next) => {
     // need to render the template using the view engine
     // we will pass to the template the products in js object
-    Product.fetchAll()
-      .then(([products, fieldData]) => {
+    Product.findAll()
+    .then(products => {
         res.render('shop/product-list', {
             prods: products, 
             docTitle: 'All Products',
@@ -23,8 +23,8 @@ exports.getProducts = (req, res, next) => {
 exports.getIndex = (req, res, next) => {
   // need to render the template using the view engine
   // we will pass to the template the products in js object
-  Product.fetchAll()
-  .then(([products, fieldData]) => {
+  Product.findAll()
+  .then(products => {
       res.render('shop/index', {
           prods: products, 
           docTitle: 'Shop',
@@ -41,8 +41,8 @@ exports.getIndex = (req, res, next) => {
 
 exports.getCart = (req, res, next) => {
   Cart.getCart(cart => {
-    Product.fetchAll()
-      .then(([products, fieldData]) => {
+    Product.findAll()
+    .then(products => {
         const cartProducts = [];
         for (product of products) {
           const cartProductData = cart.items.find(prod => prod.id === product.id);
@@ -68,16 +68,16 @@ exports.getCart = (req, res, next) => {
 exports.postCart = (req, res, next) => {
   const prodId = req.body.productId;
   console.log(prodId);
-  Product.findById(prodId).then(([product]) => {
-    Cart.addItem(prodId, product[0].price);
+  Product.findByPk(prodId).then(product => {
+    Cart.addItem(prodId, product.price);
     res.redirect('/cart');
   }).catch(err => console.log(err));
 }
 
 exports.postCartDeleteProduct= (req, res, next) => {
   const prodId = req.body.productId;
-  Product.findById(prodId).then(([product]) => {
-    Cart.deleteItem(prodId, product[0].price);
+  Product.findByPk(prodId).then((product) => {
+    Cart.deleteItem(prodId, product.price);
     res.redirect('/cart');
   }).catch(err => console.log(err));
   
@@ -101,10 +101,10 @@ exports.getOrders = (req, res, next) => {
 
 exports.getProductDetails = (req, res, next) => {
   const prodId = req.params.productId;
-  Product.findById(prodId).then(([product]) => {
+  Product.findByPk(prodId).then(product => {
     console.log(product);
     res.render('shop/product-details', {
-      product: product[0],
+      product: product,
       docTitle: product.title,
       path: '/products'
     })

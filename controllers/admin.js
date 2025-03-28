@@ -13,16 +13,29 @@ exports.postAddProduct = (req, res, next) => {
     const imageUrl = req.body.imageUrl;
     const description = req.body.description;
     const price = req.body.price;
-    const product = new Product(null, title, imageUrl, description, price);
-    product.insert().then(() => {
-      res.redirect('/');
-    });
+    
+    Product.create({
+      title: title,
+      imageUrl: imageUrl,
+      description: description,
+      price: price
+    })
+      .then((result) => {
+        console.log('Created Product');
+        console.log(result);
+        res.redirect('/');
+      })
+      .catch(err => console.log(err));
+    //const product = new Product(null, title, imageUrl, description, price);
+    // product.insert().then(() => {
+    //   res.redirect('/');
+    // });
   };
   exports.getEditProducts = (req, res, next) => {
     const editMode = req.query.edit;
     const prodId = req.params.productId;
-    Product.findById(prodId)
-      .then(([product]) => {
+    Product.findByPk(prodId)
+      .then((product) => {
         if (!product) {
           // better to move to error page - but for now we will redirect
           return res.redirect('/');
@@ -34,7 +47,7 @@ exports.postAddProduct = (req, res, next) => {
           path: '/admin/edit-product',
           editing: editMode,
           buttonCaption: 'Update Product',
-          product: product[0],
+          product: product,
         });
       
       })
@@ -48,14 +61,19 @@ exports.postAddProduct = (req, res, next) => {
     const updatedDescription = req.body.description;
     const updatedPrice = req.body.price;
     const updatedProdId = req.body.productId;
-    // create the product to update
-    const updatedProduct = new Product(updatedProdId, updatedTitle, updatedImageUrl, updatedDescription, updatedPrice);
-    console.log(updatedProduct);
-      
-    // save the updated product
-    updatedProduct.update().then(() => {
+    Product.findByPk(updatedProdId).then((product) => {
+      product.title = updatedTitle;
+      product.imageUrl = updatedImageUrl;
+      product.description = updatedDescription;
+      product.price = updatedPrice;
+      return product.save();
+    })
+    .then(result => {
+      // this is the updated product that was returned before
+      console.log(result);
       res.redirect('/admin/products');
     })
+    .catch(err => console.log(err));
   };
 
   exports.postDeleteProducts = (req, res, next) => {
@@ -71,10 +89,10 @@ exports.postAddProduct = (req, res, next) => {
 exports.getProducts = (req, res, next) => {
 // need to render the template using the view engine
 // we will pass to the template the products in js object
-Product.fetchAll().then(
-  ([rows, fieldData]) => {
+Product.findAll()
+  .then(products => {
     res.render('admin/products', {
-        prods: rows, 
+        prods: products, 
         docTitle: 'Admin Products',
         path: '/admin/products'
         });
