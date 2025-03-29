@@ -4,6 +4,10 @@ const express = require('express');
 const sequelize = require('./util/database');
 const Product = require('./models/product');
 const User = require('./models/user');
+const Cart = require('./models/cart');
+const CartItem = require('./models/cartItem');
+// const Order = require('./models/order');
+// const OrderItem = require('./models/orderItem');
 
 const app = express();
 
@@ -59,10 +63,28 @@ User.hasMany(Product, {
     as: 'updatedProducts'
 });
 
+// user has cart    
+User.hasOne(Cart, {
+    foreignKey: 'userId',
+    constraints: true,
+    onDelete: 'CASCADE'
+});
+Cart.belongsTo(User, {
+    foreignKey: 'userId',
+    constraints: true
+});
+Cart.belongsToMany(Product, {
+    through: CartItem
+})
+Product.belongsToMany(Cart, {
+    through: CartItem
+})
+
+
 
 // insure that all models are synced with the database - if no tables exist they will be created
 sequelize
-    .sync({force: false}) // {force: false} - need to remove force if we want to keep the tables, as in changes it will delete then and recreate them
+    .sync({force: true}) // {force: false} - need to remove force if we want to keep the tables, as in changes it will delete then and recreate them
     .then(result => {
         // create system dummy user 1 - first check if the user exist if not create it
         return User.findByPk(1);
