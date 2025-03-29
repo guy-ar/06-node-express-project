@@ -1,6 +1,7 @@
 
 const Product = require('../models/product');
 const Cart = require('../models/cart');
+const Order = require('../models/order');
 
 exports.getProducts = (req, res, next) => {
     // need to render the template using the view engine
@@ -100,8 +101,6 @@ exports.postCart = (req, res, next) => {
     .catch(err => console.log(err));  
 }
 
-
-
 exports.postCartDeleteProduct= (req, res, next) => {
   const prodId = req.body.productId;
   req.user.getCart().then(cart => {
@@ -128,11 +127,45 @@ exports.getCheckout = (req, res, next) => {
 }
 
 exports.getOrders = (req, res, next) => {
-  res.render('shop/orders', {
-      //prods: [],
+  req.user.getOrders({include: ['products']}) // if fetching order s fetch also the related products
+  .then(orders => {
+    res.render('shop/orders', {
+      orders: orders,
       docTitle: 'Orders',
       path: '/orders'
+    })
   })
+  .catch(err => console.log(err));
+}
+exports.postOrder = (req, res, next) => {
+  let fetchedCart;
+  req.user.getCart()
+    .then(cart => {
+      // need to return all the product that belongs to the cart
+      fetchedCart = cart;
+      return cart.getProducts();
+    })
+    .then(products => {
+      // we will create order for the user
+      return req.user.createOrder()
+        .then(order => {
+          // need to  associate the products with the order   
+          return order.addProducts(products.map(product => {
+            // need to retrun the quantity along each product - so using map we will update the quantity within the order item
+            product.orderItem = {quantity: product.cartItem.quantity}
+            return product;
+          })
+          );
+        })
+        .catch(err => console.log(err));
+    })
+    .then((result) => {
+      return fetchedCart.setProducts(null); // need to empty the cart
+    })
+    .then(() => {
+      res.redirect('/orders');
+    })
+    .catch(err => console.log(err));  
 }
 
 exports.getProductDetails = (req, res, next) => {

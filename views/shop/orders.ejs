@@ -4,6 +4,25 @@
 <body>
     <%- include('../includes/navigation') %>
     <main>
-    	<H1>Orders - in process</H1>
+        <% if (orders.length > 0) { %>
+            <ul class="cart__item-list">
+                <% for (const order of orders) { %>
+                    <li class="cart__item">
+                    	<h1><%= order.id %></h1>
+                        <ul>
+                            <% for (const product of order.products) { %>
+                                <li><%= product.title %> (<%= product.orderItem.quantity %>)</li>
+                            <% } %>
+                        </ul>
+                        <form action="/create-order" method="POST">
+                            <button class="btn" type="submit">Order</button>
+                            <input type="hidden" name="orderId" value="<%= order.id %>">
+                        </form>
+                    </li>
+                <% } %>
+            </ul>
+        <% } else { %>
+            <h1>No orders</h1>
+        <% } %>
     </main>
 <%- include('../includes/tail') %>
