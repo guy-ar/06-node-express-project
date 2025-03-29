@@ -2,6 +2,8 @@ const path = require('path');
 
 const express = require('express');
 const sequelize = require('./util/database');
+const Product = require('./models/product');
+const User = require('./models/user');
 
 const app = express();
 
@@ -18,16 +20,54 @@ app.use(express.urlencoded({extended: true}));
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
+// new middleware to find the System user when the app is started
+app.use((req, res, next) => {
+    User.findByPk(1)
+    .then(user => {
+        // adding the sequlize user to the request object that will be passed to the controllers
+        req.user = user;
+        next();
+    })
+    .catch(err => console.log(err));
+});
+
 app.use('/admin', adminRoutes);
 app.use(shopRoutes);
 
 app.use(errorController.getErrorPage);
 
+//create the associations between the models
+// user has products that he created
+// when deleting a user the products will be deleted
+Product.belongsTo(User, {
+    foreignKey: 'createdUserId',
+    constraints: true, 
+    onDelete: 'CASCADE'
+});
+// the opposite relationship
+User.hasMany(Product, {
+    foreignKey: 'createdUserId'
+});
 // insure that all models are synced with the database - if no tables exist they will be created
 sequelize
-    .sync()
+    .sync() // {force: false} - need to remove force if we want to keep the tables, as in changes it will delete then and recreate them
     .then(result => {
-        //console.log(result);
+        // create system dummy user 1 - first check if the user exist if not create it
+        return User.findByPk(1);
+    })
+    .then(user => {
+        if (!user) {
+            return User.create({
+                name: 'System',
+                email: 'doNotReplay@example.com',
+                password: 'password'
+            })
+        } else {
+            return user;
+        }
+    })
+    .then(user => {
+        console.log(user);
         app.listen(3000);
     })
     .catch(err => {
