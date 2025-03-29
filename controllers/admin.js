@@ -13,13 +13,20 @@ exports.postAddProduct = (req, res, next) => {
     const imageUrl = req.body.imageUrl;
     const description = req.body.description;
     const price = req.body.price;
-    
-    Product.create({
+    req.user.createProduct({
       title: title,
       imageUrl: imageUrl,
       description: description,
       price: price
     })
+    // alternatively we can do this and accociate the product with the user
+    // Product.create({
+    //   title: title,
+    //   imageUrl: imageUrl,
+    //   description: description,
+    //   price: price//,
+    //   //createdUserId: req.user.id // alternatively we can do this - instead createProduct()
+    // })
       .then((result) => {
         console.log('Created Product');
         console.log(result);
@@ -47,7 +54,7 @@ exports.postAddProduct = (req, res, next) => {
           path: '/admin/edit-product',
           editing: editMode,
           buttonCaption: 'Update Product',
-          product: product,
+          product: product
         });
       
       })
