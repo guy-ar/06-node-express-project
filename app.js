@@ -84,7 +84,7 @@ Product.belongsToMany(Cart, {
 
 // insure that all models are synced with the database - if no tables exist they will be created
 sequelize
-    .sync({force: true}) // {force: false} - need to remove force if we want to keep the tables, as in changes it will delete then and recreate them
+    .sync({force: false}) // {force: true} - need to remove force if we want to keep the tables, as in changes it will delete then and recreate them
     .then(result => {
         // create system dummy user 1 - first check if the user exist if not create it
         return User.findByPk(1);
@@ -102,7 +102,11 @@ sequelize
     })
     .then(user => {
         console.log(user);
+        return user.createCart();
+    })
+    .then(result => {
         app.listen(3000);
+        console.log('Server started on port 3000');
     })
     .catch(err => {
         console.log(err);
