@@ -6,8 +6,8 @@ const Product = require('./models/product');
 const User = require('./models/user');
 const Cart = require('./models/cart');
 const CartItem = require('./models/cartItem');
-// const Order = require('./models/order');
-// const OrderItem = require('./models/orderItem');
+const Order = require('./models/order');
+const OrderItem = require('./models/orderItem');
 
 const app = express();
 
@@ -78,6 +78,27 @@ Cart.belongsToMany(Product, {
 })
 Product.belongsToMany(Cart, {
     through: CartItem
+})
+
+Order.belongsTo(User, {
+    foreignKey: 'userId',
+    constraints: true
+});
+// user has orders
+User.hasMany(Order, {
+    foreignKey: 'userId',
+    constraints: true,
+    onDelete: 'CASCADE'
+});
+Order.belongsTo(User, {
+    foreignKey: 'userId',
+    constraints: true
+});
+Order.belongsToMany(Product, {
+    through: OrderItem
+})
+Product.belongsToMany(Order, {
+    through: OrderItem
 })
 
 
