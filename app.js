@@ -40,17 +40,29 @@ app.use(errorController.getErrorPage);
 // user has products that he created
 // when deleting a user the products will be deleted
 Product.belongsTo(User, {
-    foreignKey: 'createdUserId',
+    foreignKey: 'createdById',
     constraints: true, 
     onDelete: 'CASCADE'
 });
 // the opposite relationship
 User.hasMany(Product, {
-    foreignKey: 'createdUserId'
+    foreignKey: 'createdById',
+    as: 'createdProducts'
 });
+// 
+Product.belongsTo(User, {
+    foreignKey: 'updatedById'
+});
+// the opposite relationship
+User.hasMany(Product, {
+    foreignKey: 'updatedById',
+    as: 'updatedProducts'
+});
+
+
 // insure that all models are synced with the database - if no tables exist they will be created
 sequelize
-    .sync() // {force: false} - need to remove force if we want to keep the tables, as in changes it will delete then and recreate them
+    .sync({force: false}) // {force: false} - need to remove force if we want to keep the tables, as in changes it will delete then and recreate them
     .then(result => {
         // create system dummy user 1 - first check if the user exist if not create it
         return User.findByPk(1);

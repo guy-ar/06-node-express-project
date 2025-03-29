@@ -13,30 +13,21 @@ exports.postAddProduct = (req, res, next) => {
     const imageUrl = req.body.imageUrl;
     const description = req.body.description;
     const price = req.body.price;
-    req.user.createProduct({
+    // as we have now a user with 2 realtios to product we need to use the alias mehtod
+    
+    req.user.createCreatedProduct({
       title: title,
       imageUrl: imageUrl,
       description: description,
-      price: price
+      price: price,
+      createdById: req.user.id
     })
-    // alternatively we can do this and accociate the product with the user
-    // Product.create({
-    //   title: title,
-    //   imageUrl: imageUrl,
-    //   description: description,
-    //   price: price//,
-    //   //createdUserId: req.user.id // alternatively we can do this - instead createProduct()
-    // })
       .then((result) => {
         console.log('Created Product');
         console.log(result);
         res.redirect('/admin/products');
       })
       .catch(err => console.log(err));
-    //const product = new Product(null, title, imageUrl, description, price);
-    // product.insert().then(() => {
-    //   res.redirect('/');
-    // });
   };
   exports.getEditProducts = (req, res, next) => {
     const editMode = req.query.edit;
@@ -73,6 +64,7 @@ exports.postAddProduct = (req, res, next) => {
       product.imageUrl = updatedImageUrl;
       product.description = updatedDescription;
       product.price = updatedPrice;
+      product.updatedById = req.user.id;
       return product.save();
     })
     .then(result => {
