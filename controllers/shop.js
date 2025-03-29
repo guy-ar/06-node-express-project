@@ -104,11 +104,19 @@ exports.postCart = (req, res, next) => {
 
 exports.postCartDeleteProduct= (req, res, next) => {
   const prodId = req.body.productId;
-  Product.findByPk(prodId).then((product) => {
-    Cart.deleteItem(prodId, product.price);
+  req.user.getCart().then(cart => {
+    return cart.getProducts({where: {id: prodId}});
+  })
+  .then(products => {
+    // the product to delete is in the cart products array
+    const product = products[0];
+    // use sequlize to delete the item from the cart
+    return product.cartItem.destroy();
+  })
+  .then(result => {
     res.redirect('/cart');
-  }).catch(err => console.log(err));
-  
+  })
+  .catch(err => console.log(err));
 }
 
 exports.getCheckout = (req, res, next) => {
