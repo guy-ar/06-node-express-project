@@ -23,7 +23,7 @@ exports.postAddProduct = (req, res, next) => {
       .then((result) => {
         console.log('Created Product');
         console.log(result);
-        res.redirect('/');
+        res.redirect('/admin/products');
       })
       .catch(err => console.log(err));
     //const product = new Product(null, title, imageUrl, description, price);
@@ -79,13 +79,28 @@ exports.postAddProduct = (req, res, next) => {
   exports.postDeleteProducts = (req, res, next) => {
     const prodIdToDelete = req.body.productId;
     console.log(prodIdToDelete);
-    Product.deleteById(prodIdToDelete).then(() => {
-      console.log('deleted');
-      res.redirect('/admin/products');
-    }).catch(err => console.log(err));
-      
-    
+    // in seqlize we can do Product.destroy({where: {id: prodIdToDelete}});, insead delete by id with sql to delete
+    // Product.deleteById(prodIdToDelete).then(() => {
+    //   console.log('deleted');
+    //   res.redirect('/admin/products');
+    // }).catch(err => console.log(err));
+    Product.destroy({where: {id: prodIdToDelete}})
+      .then(() => {
+        console.log('deleted');
+        res.redirect('/admin/products');
+      })
+      .catch(err => console.log(err));
+    // // another approch will be to fid then product and then on the next line delete it
+    // Product.findByPk(prodIdToDelete).then((product) => {
+    //   return product.destroy();
+    // })
+    // .then(result => {
+    //   console.log("Destroyed Product");
+    //   res.redirect('/admin/products');
+    // })
+    // .catch(err => console.log(err));
   };
+  
 exports.getProducts = (req, res, next) => {
 // need to render the template using the view engine
 // we will pass to the template the products in js object
